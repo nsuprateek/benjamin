@@ -1,4 +1,4 @@
-const { Client, Intents, PermissionsBitField} = require('discord.js');
+const { Client, Intents, PermissionsBitField, GatewayIntentBits} = require('discord.js');
 const { 
     createAudioPlayer, 
     createAudioResource, 
@@ -7,15 +7,17 @@ const {
     VoiceConnectionStatus,
     getVoiceConnection } = require('@discordjs/voice');
 
-require('dotenv').config();
-const token = process.env.DISCORD_TOKEN;
+const { token } = require('./config.json');
 
 
-const botClient = new Client({ intents: [
-    Intents.FLAGS.GUILDS, 
-    Intents.FLAGS.GUILD_MESSAGES, 
-    Intents.FLAGS.GUILD_VOICE_STATES
-] });
+const botClient = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildMembers,
+	],
+});
     
 botClient.login(token);
 // const adminPermissions = new PermissionsBitField(PermissionsBitField.Flags.Administrator);
